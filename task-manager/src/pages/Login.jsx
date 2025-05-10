@@ -1,27 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import '../index.css'
-import '../auth.css'
-
+import '../index.css';
+import '../auth.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    // TODO: Replace with real authentication logic
-    if (email && password) {
-      console.log("Logging in with:", { email, password });
-      navigate("/dashboard");
+  useEffect(() => {
+    // Remove dashboard layout class if it exists
+    document.body.classList.remove('dashboard-layout');
+    
+    // Check if user is already logged in
+    const user = localStorage.getItem('user');
+    if (user) {
+      navigate('/dashboard');
     }
-  };
+  }, [navigate]);
+
+  const handleLogin = (e) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
+
+  // Simple validation
+  if (!email || !password) {
+    setError("Please enter both email and password");
+    setIsLoading(false);
+    return;
+  }
+
+  // Simulate login delay
+  setTimeout(() => {
+    // Store dummy user info for testing
+    localStorage.setItem('user', JSON.stringify({ email }));
+    setIsLoading(false);
+    navigate("/dashboard");
+  }, 1000);
+};
+
 
   return (
     <div className="auth-container">
-      <h2>Login</h2>
+      <h2>Login to Task Manager</h2>
+      
+      {error && <div className="auth-error">{error}</div>}
+      
       <form onSubmit={handleLogin} className="auth-form">
         <input
           type="email"
@@ -39,10 +66,13 @@ const Login = () => {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
+      
       <p>
-        Don't have an account? <a href="/signup">Signup</a>
+        Don't have an account? <a href="/signup">Sign up</a>
       </p>
     </div>
   );
