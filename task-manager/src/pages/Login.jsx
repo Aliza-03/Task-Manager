@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import '../index.css';
-import '../auth.css';
+import axios from "axios"; // Import axios
+import "../index.css";
+import "../auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,43 +13,47 @@ const Login = () => {
 
   useEffect(() => {
     // Remove dashboard layout class if it exists
-    document.body.classList.remove('dashboard-layout');
-    
+    document.body.classList.remove("dashboard-layout");
+
     // Check if user is already logged in
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem("user");
     if (user) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [navigate]);
 
-  const handleLogin = (e) => {
-  e.preventDefault();
-  setError("");
-  setIsLoading(true);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-  // Simple validation
-  if (!email || !password) {
-    setError("Please enter both email and password");
-    setIsLoading(false);
-    return;
-  }
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      setIsLoading(false);
+      return;
+    }
 
-  // Simulate login delay
-  setTimeout(() => {
-    // Store dummy user info for testing
-    localStorage.setItem('user', JSON.stringify({ email }));
-    setIsLoading(false);
-    navigate("/dashboard");
-  }, 1000);
-};
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
 
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setIsLoading(false);
+      navigate("/dashboard");
+    } catch (err) {
+      setIsLoading(false);
+      setError(err.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="auth-container">
       <h2>Login to Task Manager</h2>
-      
+
       {error && <div className="auth-error">{error}</div>}
-      
+
       <form onSubmit={handleLogin} className="auth-form">
         <input
           type="email"
@@ -67,10 +72,10 @@ const Login = () => {
         />
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
-      
+
       <p>
         Don't have an account? <a href="/signup">Sign up</a>
       </p>

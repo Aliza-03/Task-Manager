@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
+import './Login';
 
 // Mock task data (replace with your actual data source)
 const mockTasks = [
@@ -48,11 +49,12 @@ const Dashboard = () => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleLogout = () => {
-    // Clear user session data
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
+ const handleLogout = () => {
+
+  localStorage.removeItem('user'); 
+  navigate('/login');
+};
+
 
   const toggleTaskExpansion = (taskId) => {
     setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
@@ -143,6 +145,7 @@ const Dashboard = () => {
           </li>
         </ul>
         <button onClick={handleLogout} className="logout-btn">Logout</button>
+
       </div>
 
       {/* Main content area */}
