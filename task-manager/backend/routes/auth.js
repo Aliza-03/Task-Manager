@@ -1,88 +1,39 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Import axios
-import "../index.css";
-import "../auth.css";
+import express from "express";
+import { pool } from "../db.js";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+const router = express.Router();
 
-  useEffect(() => {
-    // Remove dashboard layout class if it exists
-    document.body.classList.remove("dashboard-layout");
+// Signup
+router.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
+  console.log("i made it here")
+  try {
+    const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing.length > 0) return res.status(400).json({ message: "User already exists" });
 
-    // Check if user is already logged in
-    const user = localStorage.getItem("user");
-    if (user) {
-      // If user is logged in, redirect to dashboard
-      navigate("/dashboard");
-    }
-  }, [navigate]);
+    await pool.query("INSERT INTO users (email, password) VALUES (?, ?)", [email, password]);
+    res.status(201).json({ message: "User created successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error creating user", error: err });
+  }
+});
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
+// Login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-      setError("Please enter both email and password");
-      setIsLoading(false);
-      return;
+  try {
+    const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    const user = users[0];
+
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+    res.json({ message: "Login successful", user });
+  } catch (err) {
+    res.status(500).json({ message: "Error logging in", error: err });
+  }
+});
 
-      // Store the user data in localStorage after successful login
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      setIsLoading(false);
-      navigate("/dashboard");
-    } catch (err) {
-      setIsLoading(false);
-      setError(err.response?.data?.message || "Login failed");
-    }
-  };
-
-  return (
-    <div className="auth-container">
-      <h2>Login to Task Manager</h2>
-
-      {error && <div className="auth-error">{error}</div>}
-
-      <form onSubmit={handleLogin} className="auth-form">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-
-      <p>
-        Don't have an account? <a href="/signup">Sign up</a>
-      </p>
-    </div>
-  );
-};
-
-export default Login;
+export default router;
