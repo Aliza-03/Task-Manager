@@ -50,6 +50,18 @@ docker run -d -p 3000:3000 task-manager-backend
 Build the frontend through npm run build
 and upload the builded file on elastic beanstalk
 
+### DB Setup on AWS
+![image](https://github.com/user-attachments/assets/9818141e-5488-428b-86b7-9bb6ccda9174)
+
+### Application on Elastic Beanstalk
+![image](https://github.com/user-attachments/assets/3aa0e7c0-dd66-491d-9382-1eb6d5e4cc46)
+
+### Website deployed
+![image](https://github.com/user-attachments/assets/b9845b73-c67a-4280-9afa-a5e6096cdd4b)
+
+
+
+
 
 
 
