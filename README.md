@@ -1,6 +1,6 @@
 # Task Manager App – Deployment Guide
 
-This project is a full-stack Task Manager application with a React frontend and a Node.js backend (Dockerized). Here's how to deploy both components independently using **AWS EC2** and **Elastic Beanstalk**.
+This project is a full-stack Task Manager application with a React frontend and a Node.js backend (Dockerized). Here's how we deployed both components independently using **AWS EC2** and **Elastic Beanstalk**.
 
 ---
 
@@ -48,7 +48,7 @@ docker run -d -p 3000:3000 task-manager-backend
 ```
 ### Frontend Deployment
 Build the frontend through npm run build
-and upload the builded file on elastic beanstalk
+and upload the built file on elastic beanstalk. After completing the configurations we launched the web application. Proof screenshotted below
 
 ### DB Setup on AWS
 ![image](https://github.com/user-attachments/assets/9818141e-5488-428b-86b7-9bb6ccda9174)
@@ -60,7 +60,7 @@ and upload the builded file on elastic beanstalk
 ![image](https://github.com/user-attachments/assets/b9845b73-c67a-4280-9afa-a5e6096cdd4b)
 
 
-
+**Note: This project was previously hosted on AWS but taken down due to resource constraints. The following screenshots and explanations reflect the deployed version.**
 
 
 
